@@ -1,15 +1,15 @@
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <ui/window.hpp>
+#include "window.hpp"
 
-game::Window::Window(unsigned int width, unsigned int height, sf::String title, unsigned int numOfGrid)
+game::Window::Window(uint width, uint height, sf::String title, bool showGrid, uint numOfGrid)
 : sf::RenderWindow(sf::VideoMode({ width, height }), title, m_style, m_state),
+  m_showGrid(showGrid),
   m_numOfGrid(numOfGrid) {
 
     auto [desktopWidth, desktopHeight] = sf::VideoMode::getDesktopMode().size;
     auto [windowWidth, windowHeight] = this->getSize();
 
-    this->setPosition({ static_cast<int>((desktopWidth - windowWidth) / 2),
-    static_cast<int>(desktopHeight - windowHeight) / 2 });
+    this->setPosition({ (int)((desktopWidth - windowWidth) / 2),
+    (int)(desktopHeight - windowHeight) / 2 });
 
     this->setFramerateLimit(m_framerateLimit);
 
@@ -18,48 +18,51 @@ game::Window::Window(unsigned int width, unsigned int height, sf::String title, 
         const float gridWidth = this->getSize().x / (float)numOfGrid;
         const float gridHeight = this->getSize().y / (float)numOfGrid;
 
-        gridRect = sf::RectangleShape({ gridWidth, gridHeight });
-        gridRect.setFillColor(sf::Color::Black);
-        gridRect.setOutlineThickness(1.f);
-        gridRect.setOutlineColor(sf::Color::Green);
+        m_gridRect = sf::RectangleShape({ gridWidth, gridHeight });
+        m_gridRect.setFillColor(sf::Color::Black);
+        m_gridRect.setOutlineThickness(1.f);
+        m_gridRect.setOutlineColor(sf::Color(0, 255, 0, 50));
     }
 }
 
 void game::Window::gameLoop() {
     while(this->isOpen()) {
         while(const auto event = this->pollEvent()) {
-            this->update(event);
+            this->m_update(event);
         }
-        this->render();
+        this->m_render();
     }
 }
 
-void game::Window::update(const std::optional<sf::Event> event) {
+void game::Window::m_update(const std::optional<sf::Event>& event) {
     if(event->is<sf::Event::Closed>()) {
         this->close();
     }
+    mainMenu.update(event);
 }
 
-void game::Window::render() {
+void game::Window::m_render() {
     this->clear(sf::Color::Black);
 
     // NOTE: Render texts, shapes, and sprites here
     // --------------------------------------------
     if(m_numOfGrid) {
-        drawGrid();
+        m_drawGrid();
     }
+
+    mainMenu.draw();
 
     // --------------------------------------------
 
     this->display();
 }
 
-void game::Window::drawGrid() {
-    auto [gridWidth, gridHeight] = gridRect.getSize();
+void game::Window::m_drawGrid() {
+    auto [gridWidth, gridHeight] = m_gridRect.getSize();
     for(int i = 0; i < m_numOfGrid; i++) {
         for(int j = 0; j < m_numOfGrid; j++) {
-            gridRect.setPosition({ gridWidth * i, gridHeight * j });
-            this->draw(gridRect);
+            m_gridRect.setPosition({ gridWidth * i, gridHeight * j });
+            this->draw(m_gridRect);
         }
     }
 }

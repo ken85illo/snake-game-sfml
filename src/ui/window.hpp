@@ -1,23 +1,26 @@
 #pragma once
 
+#include "menu.hpp"
 #include <SFML/Graphics.hpp>
 
 namespace game {
-class Window : public sf::RenderWindow {
+class Window : private sf::RenderWindow {
 private:
-    static constexpr unsigned int m_style = sf::Style::Close;
-    static constexpr sf::State m_state = sf::State::Windowed;
-    static constexpr unsigned int m_framerateLimit = 30u;
-    unsigned int m_numOfGrid = 0;
-    sf::RectangleShape gridRect;
+    static constexpr uint m_style{ sf::Style::Close };
+    static constexpr sf::State m_state{ sf::State::Windowed };
+    static constexpr uint m_framerateLimit{ 30u };
 
-    void update(const std::optional<sf::Event> event);
-    void render();
+    bool m_showGrid;
+    uint m_numOfGrid;
+    sf::RectangleShape m_gridRect;
+    game::Menu mainMenu{ this };
 
-    void drawGrid();
+    void m_update(const std::optional<sf::Event>& event);
+    void m_render();
+    void m_drawGrid();
 
 public:
-    Window(unsigned int width, unsigned int height, sf::String title, unsigned int numOfGrid = 0);
+    Window(uint width, uint height, sf::String title, bool showGrid = false, uint numOfGrid = 25);
     void gameLoop();
 };
-}; // namespace game
+} // namespace game

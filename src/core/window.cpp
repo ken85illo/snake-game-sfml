@@ -1,9 +1,17 @@
-#include "window.hpp"
+#include <core/apple.hpp>
+#include <core/engine.hpp>
+#include <ui/menu.hpp>
+
+game::State game::state = game::State::MENU_STATE;
+uint game::numOfGrid;
+sf::Vector2f game::gridSize;
+std::optional<sf::Event> game::event;
 
 game::Window::Window(uint width, uint height, sf::String title, bool showGrid, uint numOfGrid)
 : sf::RenderWindow(sf::VideoMode({ width, height }), title, m_style, m_state),
-  m_showGrid(showGrid),
-  m_numOfGrid(numOfGrid) {
+  m_showGrid(showGrid) {
+
+    game::numOfGrid = numOfGrid;
 
     auto [desktopWidth, desktopHeight] = sf::VideoMode::getDesktopMode().size;
     auto [windowWidth, windowHeight] = this->getSize();
@@ -18,27 +26,39 @@ game::Window::Window(uint width, uint height, sf::String title, bool showGrid, u
         const float gridWidth = this->getSize().x / (float)numOfGrid;
         const float gridHeight = this->getSize().y / (float)numOfGrid;
 
-        m_gridRect = sf::RectangleShape({ gridWidth, gridHeight });
-        m_gridRect.setFillColor(sf::Color::Black);
+        game::gridSize = sf::Vector2f{ gridWidth, gridHeight };
+        m_gridRect = sf::RectangleShape(game::gridSize);
+        m_gridRect.setFillColor(sf::Color{ 0x000000FF });
         m_gridRect.setOutlineThickness(1.f);
-        m_gridRect.setOutlineColor(sf::Color(0, 255, 0, 50));
+        m_gridRect.setOutlineColor(sf::Color{ 0x009900AA });
     }
 }
 
+game::Window::~Window() {
+    delete m_mainMenu;
+    delete m_apple;
+}
+
 void game::Window::gameLoop() {
+    m_mainMenu = new game::Menu{};
+    m_apple = new game::Apple{};
+
     while(this->isOpen()) {
-        while(const auto event = this->pollEvent()) {
-            this->m_update(event);
+        while((game::event = this->pollEvent())) {
+            this->m_update();
         }
         this->m_render();
     }
 }
 
-void game::Window::m_update(const std::optional<sf::Event>& event) {
-    if(event->is<sf::Event::Closed>()) {
+void game::Window::m_update() {
+    if(game::event->is<sf::Event::Closed>()) {
         this->close();
     }
-    mainMenu.update(event);
+
+    if(game::state == game::State::MENU_STATE) {
+        m_mainMenu->update();
+    }
 }
 
 void game::Window::m_render() {
@@ -46,11 +66,15 @@ void game::Window::m_render() {
 
     // NOTE: Render texts, shapes, and sprites here
     // --------------------------------------------
-    if(m_numOfGrid) {
+    if(m_showGrid) {
         m_drawGrid();
     }
 
-    mainMenu.draw();
+    if(game::state == game::State::MENU_STATE) {
+        m_mainMenu->draw();
+    } else {
+        m_apple->draw();
+    }
 
     // --------------------------------------------
 
@@ -59,8 +83,8 @@ void game::Window::m_render() {
 
 void game::Window::m_drawGrid() {
     auto [gridWidth, gridHeight] = m_gridRect.getSize();
-    for(int i = 0; i < m_numOfGrid; i++) {
-        for(int j = 0; j < m_numOfGrid; j++) {
+    for(int i = 0; i < game::numOfGrid; i++) {
+        for(int j = 0; j < game::numOfGrid; j++) {
             m_gridRect.setPosition({ gridWidth * i, gridHeight * j });
             this->draw(m_gridRect);
         }

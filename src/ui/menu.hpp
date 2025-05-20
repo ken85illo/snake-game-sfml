@@ -1,13 +1,15 @@
 #pragma once
 
-#include "button.hpp"
+#include <SFML/Graphics.hpp>
 
 namespace game {
+
+class Button;
+enum ButtonFunction : int;
+
 class Menu {
 private:
-    sf::RenderWindow* m_window;
-
-    static constexpr uint m_titleTextSize = 80;
+    static constexpr uint m_titleTextSize = 100;
     static constexpr uint m_buttonTextSize = 50;
 
     const sf::Font m_titleFont{ "res/arial.ttf" };
@@ -15,20 +17,21 @@ private:
 
     const sf::Vector2f m_startButtonSize{ 200, 70 };
     const sf::String m_startText{ "PLAY" };
-    game::Button m_startButton{ m_startText, m_buttonTextSize };
+    game::Button* m_startButton;
 
     const sf::Vector2f m_quitButtonSize = { 200, 70 };
     const sf::String m_quitText{ "QUIT" };
-    game::Button m_quitButton{ m_quitText, m_buttonTextSize };
+    game::Button* m_quitButton;
 
     const sf::Text m_sfmlText = sf::Text(m_titleFont, "Made with SFML", 15);
 
-    void m_initTitleText();
-    void m_initButtonText(game::Button& button, float yPos, sf::Vector2f size);
+    void m_initTitleText(float yPos);
+    void m_initButtonText(game::Button* const button, float yPos, sf::Vector2f size);
 
 public:
-    Menu(sf::RenderWindow* window);
+    Menu();
+    ~Menu();
     void draw();
-    void update(const std::optional<sf::Event>& event);
+    void update();
 };
 } // namespace game

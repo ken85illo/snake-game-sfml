@@ -1,6 +1,9 @@
-#include <ui/window.hpp>
+#include <core/engine.hpp>
+
+game::Window* game::window;
 
 int main() {
-    game::Window window(800, 800, "Snake Game SFML", true);
-    window.gameLoop();
+    game::window = new game::Window{ 800, 800, "SNAKE GAME SFML", true };
+    game::window->gameLoop();
+    delete game::window;
 }

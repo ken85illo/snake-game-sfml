@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.28)
 project(SnakeGameSFML LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(INCLUDE_DIR include src)
 
 include(FetchContent)
@@ -22,6 +21,9 @@ file(
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_definitions(
+    ${PROJECT_NAME} PRIVATE CMAKE_EXPORT_COMPILE_COMMANDS=ON
+                            CMAKE_BUILD_TYPE=Debug)
 target_link_libraries(${PROJECT_NAME} PRIVATE SFML::Graphics)
 
 add_custom_command(

@@ -1,9 +1,9 @@
+#include "button.hpp"
 #include <core/engine.hpp>
-#include <ui/button.hpp>
 
 game::Button::Button(ButtonFunction function, sf::String text, uint charSize, sf::Vector2f offset)
 : m_textOffsetX(offset.x), m_textOffsetY(offset.y), m_function(function) {
-    clock.reset();
+    m_clock.reset();
 
     m_buttonText.setString(text);
     m_buttonText.setFont(m_font);
@@ -16,11 +16,11 @@ game::Button::Button(ButtonFunction function, sf::String text, uint charSize, sf
     m_buttonRect.setFillColor(sf::Color::White);
 }
 
-void game::Button::m_buttonLogic() {
-    if(m_function == game::ButtonFunction::PLAY) {
-        game::state = game::State::PLAY_STATE;
+void game::Button::buttonLogic() {
+    if(m_function == ButtonFunction::PLAY) {
+        state = State::PLAY_STATE;
     } else {
-        game::window->close();
+        window.close();
     }
 }
 
@@ -39,22 +39,14 @@ sf::Vector2f game::Button::getSize() const {
 }
 
 void game::Button::draw() {
-    game::window->draw(m_buttonRect);
-    game::window->draw(m_buttonText);
+    window.draw(m_buttonRect);
+    window.draw(m_buttonText);
 }
 
 
 void game::Button::update() {
-    // Button hover effect
-    if(!clock.isRunning()) {
-        m_buttonRect.getGlobalBounds().contains(
-        (sf::Vector2f)sf::Mouse::getPosition(*game::window)) ?
-        m_buttonRect.setFillColor(s_hovered) :
-        m_buttonRect.setFillColor(s_default);
-    }
-
     auto buttonPressed = [this]() {
-        const auto* mousePressed = game::event->getIf<sf::Event::MouseButtonPressed>();
+        const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>();
         if(mousePressed) {
             bool intersects = m_buttonRect.getGlobalBounds().contains(
             (sf::Vector2f)mousePressed->position);
@@ -67,20 +59,29 @@ void game::Button::update() {
 
     // Button turns green when pressed
     if(buttonPressed()) {
-        clock.start();
+        m_clock.start();
         m_buttonRect.setFillColor(s_clicked);
     }
 
     // Reset the color after clicking
-    if(clock.isRunning()) {
-        sf::Time time = clock.getElapsedTime();
+    if(!m_clock.isRunning()) {
+        // Button hover effect
+        m_buttonRect.getGlobalBounds().contains(
+        (sf::Vector2f)sf::Mouse::getPosition(window)) ?
+        m_buttonRect.setFillColor(s_hovered) :
+        m_buttonRect.setFillColor(s_default);
+    } else {
+        sf::Time time = m_clock.getElapsedTime();
 
-        // Hover effect timer and delay for button logic
-        if(time.asMilliseconds() >= 300) {
-            m_buttonLogic();
-            clock.reset();
-        } else if(time.asMilliseconds() >= 100) {
+        // Set color to green when pressed
+        if(time.asMilliseconds() >= 100) {
             m_buttonRect.setFillColor(s_hovered);
+        }
+
+        // Delay the function of button
+        if(time.asMilliseconds() >= 200) {
+            buttonLogic();
+            m_clock.reset();
         }
     }
 }

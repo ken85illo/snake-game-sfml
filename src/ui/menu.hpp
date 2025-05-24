@@ -25,8 +25,8 @@ private:
 
     const sf::Text m_sfmlText = sf::Text(m_titleFont, "Made with SFML", 15);
 
-    void m_initTitleText(float yPos);
-    void m_initButtonText(game::Button* const button, float yPos, sf::Vector2f size);
+    void initTitleText(float yPos);
+    void initButtonText(game::Button* const button, float yPos, sf::Vector2f size);
 
 public:
     Menu();

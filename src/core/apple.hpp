@@ -7,7 +7,6 @@ namespace game {
 class Apple : public sf::CircleShape {
 private:
     const float m_radius;
-    const uint m_numOfGrid;
 
 public:
     Apple();

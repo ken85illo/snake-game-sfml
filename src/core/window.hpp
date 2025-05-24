@@ -6,6 +6,7 @@ namespace game {
 
 class Menu;
 class Apple;
+class Snake;
 
 class Window : public sf::RenderWindow {
 private:
@@ -15,15 +16,15 @@ private:
 
     bool m_showGrid;
     sf::RectangleShape m_gridRect;
-    game::Menu* m_mainMenu;
-    game::Apple* m_apple;
+    Menu* m_mainMenu;
+    Snake* m_snake;
 
-    void m_update();
-    void m_render();
-    void m_drawGrid();
+    void update();
+    void render();
+    void drawGrid();
 
 public:
-    Window(uint width, uint height, sf::String title, bool showGrid = false, uint numOfGrid = 25);
+    Window(uint width, uint height, sf::String title, uint numOfGrid = 25, bool showGrid = false);
     ~Window();
     void gameLoop();
 };

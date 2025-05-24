@@ -18,8 +18,8 @@ private:
     const sf::Font m_font{ "res/arial.ttf" };
     sf::RectangleShape m_buttonRect{};
     sf::Text m_buttonText{ m_font };
-    sf::Clock clock;
-    void m_buttonLogic();
+    sf::Clock m_clock;
+    void buttonLogic();
 
 public:
     Button(ButtonFunction function,

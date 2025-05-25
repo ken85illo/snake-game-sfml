@@ -2,9 +2,9 @@
 #include <cmath>
 #include <engine.hpp>
 
-Snake::Snake() : m_radius(window->gridSize.x / 2.f) {
+Snake::Snake() {
     m_clock.reset();
-    m_bodyPart.setRadius(m_radius);
+    m_bodyPart.setSize(window->gridSize);
     m_bodyPart.setFillColor(sf::Color::Green); // Body
 
     for(int i = 0; i < m_initialSize; i++) {
@@ -18,8 +18,8 @@ Snake::Snake() : m_radius(window->gridSize.x / 2.f) {
 }
 
 void Snake::draw() {
-    for(auto& circle : m_snake) {
-        window->draw(circle);
+    for(auto& rect : m_snake) {
+        window->draw(rect);
     }
 }
 
@@ -48,18 +48,18 @@ void Snake::move() {
     auto windowSize = (sf::Vector2f)window->getSize();
 
     // Reset x position when going out of the right or left side of the window
-    if(headPosition.x <= -window->gridSize.x)
+    if(headPosition.x < 0.0f)
         m_snake[0].setPosition({ windowSize.x - window->gridSize.x, headPosition.y });
 
-    if(headPosition.x >= (windowSize.x + window->gridSize.x))
+    if(headPosition.x > windowSize.x)
         m_snake[0].setPosition({ 0.f, headPosition.y });
 
 
     // Reset x position when going out of the right or left side of the window
-    if(headPosition.y <= -window->gridSize.y)
+    if(headPosition.y < 0.0f)
         m_snake[0].setPosition({ headPosition.x, windowSize.y - window->gridSize.y });
 
-    if(headPosition.y >= (windowSize.y + window->gridSize.y))
+    if(headPosition.y > windowSize.y)
         m_snake[0].setPosition({ headPosition.x, 0.f });
 
 
@@ -69,6 +69,7 @@ void Snake::move() {
         window->apple->update();
         m_bodyPart.setPosition(m_snake.back().getPosition());
         m_snake.push_back(m_bodyPart);
+        window->score++;
     }
 }
 

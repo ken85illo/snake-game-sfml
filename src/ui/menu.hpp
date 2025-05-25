@@ -5,6 +5,11 @@
 #include "button.hpp"
 
 class Menu {
+public:
+    Menu();
+    void draw();
+    void update();
+
 private:
     static constexpr uint m_titleTextSize = 100;
     static constexpr uint m_buttonTextSize = 50;
@@ -24,9 +29,4 @@ private:
 
     void initTitleText(float yPos);
     void initButtonText(Button& button, float yPos, sf::Vector2f size);
-
-public:
-    Menu();
-    void draw();
-    void update();
 };

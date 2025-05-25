@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include <string>
 
 Window::Window(uint width, uint height, sf::String title, uint numOfGrid, bool showGrid)
 : sf::RenderWindow(sf::VideoMode({ width, height }), title, m_style, m_state),
@@ -45,9 +46,16 @@ void Window::gameLoop() {
     }
 }
 
+void Window::scoreUpdate() {
+    std::string scoreText = "Score: ";
+    m_scoreText.setString(scoreText.append(std::to_string(score)));
+}
+
 void Window::update() {
-    if(state == PLAY_STATE)
+    if(state == PLAY_STATE) {
         m_snake->move();
+        scoreUpdate();
+    }
 
     while((event = this->pollEvent())) {
         if(event->is<sf::Event::Closed>())
@@ -75,6 +83,7 @@ void Window::render() {
     else {
         apple->draw();
         m_snake->draw();
+        this->draw(m_scoreText);
     }
 
     // --------------------------------------------

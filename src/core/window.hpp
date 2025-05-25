@@ -18,6 +18,7 @@ public:
     sf::Vector2f gridSize;
     std::optional<sf::Event> event;
     Apple* apple;
+    uint8_t score = 0;
 
     Window(uint width, uint height, sf::String title, uint numOfGrid = 25, bool showGrid = false);
     ~Window();
@@ -33,7 +34,11 @@ private:
     Menu* m_mainMenu;
     Snake* m_snake;
 
+    const sf::Font m_scoreFont{ "res/arial.ttf" };
+    sf::Text m_scoreText = sf::Text(m_scoreFont, "Score: 0", 15);
+
     void update();
+    void scoreUpdate();
     void render();
     void drawGrid();
 };

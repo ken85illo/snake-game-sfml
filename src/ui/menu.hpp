@@ -2,10 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace game {
-
-class Button;
-enum ButtonFunction : int;
+#include "button.hpp"
 
 class Menu {
 private:
@@ -17,21 +14,19 @@ private:
 
     const sf::Vector2f m_startButtonSize{ 200, 70 };
     const sf::String m_startText{ "PLAY" };
-    game::Button* m_startButton;
+    Button m_startButton{ Button::PLAY, "PLAY", m_buttonTextSize };
 
     const sf::Vector2f m_quitButtonSize = { 200, 70 };
     const sf::String m_quitText{ "QUIT" };
-    game::Button* m_quitButton;
+    Button m_quitButton{ Button::QUIT, "QUIT", m_buttonTextSize };
 
     const sf::Text m_sfmlText = sf::Text(m_titleFont, "Made with SFML", 15);
 
     void initTitleText(float yPos);
-    void initButtonText(game::Button* const button, float yPos, sf::Vector2f size);
+    void initButtonText(Button& button, float yPos, sf::Vector2f size);
 
 public:
     Menu();
-    ~Menu();
     void draw();
     void update();
 };
-} // namespace game

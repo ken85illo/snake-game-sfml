@@ -1,7 +1,9 @@
-#include <core/engine.hpp>
+#include <engine.hpp>
 
-game::Window game::window{ 800, 800, "SNAKE GAME SFML", 60 };
+Window* window;
 
 int main() {
-    game::window.gameLoop();
+    window = new Window{ 800, 800, "SNAKE GAME SFML", 60, true };
+    window->gameLoop();
+    delete window;
 }

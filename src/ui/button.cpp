@@ -1,7 +1,7 @@
 #include "button.hpp"
-#include <core/engine.hpp>
+#include <engine.hpp>
 
-game::Button::Button(ButtonFunction function, sf::String text, uint charSize, sf::Vector2f offset)
+Button::Button(Function function, sf::String text, uint charSize, sf::Vector2f offset)
 : m_textOffsetX(offset.x), m_textOffsetY(offset.y), m_function(function) {
     m_clock.reset();
 
@@ -16,37 +16,37 @@ game::Button::Button(ButtonFunction function, sf::String text, uint charSize, sf
     m_buttonRect.setFillColor(sf::Color::White);
 }
 
-void game::Button::buttonLogic() {
-    if(m_function == ButtonFunction::PLAY) {
-        state = State::PLAY_STATE;
+void Button::buttonLogic() {
+    if(m_function == Function::PLAY) {
+        window->state = Window::PLAY_STATE;
     } else {
-        window.close();
+        window->close();
     }
 }
 
-void game::Button::setSize(sf::Vector2f size) {
+void Button::setSize(sf::Vector2f size) {
     m_buttonRect.setSize(size);
     m_buttonRect.setOrigin(m_buttonRect.getLocalBounds().getCenter());
 }
 
-void game::Button::setPosition(sf::Vector2f pos) {
+void Button::setPosition(sf::Vector2f pos) {
     m_buttonRect.setPosition(pos);
     m_buttonText.setPosition({ pos.x + m_textOffsetX, pos.y + m_textOffsetY });
 }
 
-sf::Vector2f game::Button::getSize() const {
+sf::Vector2f Button::getSize() const {
     return m_buttonRect.getSize();
 }
 
-void game::Button::draw() {
-    window.draw(m_buttonRect);
-    window.draw(m_buttonText);
+void Button::draw() {
+    window->draw(m_buttonRect);
+    window->draw(m_buttonText);
 }
 
 
-void game::Button::update() {
+void Button::update() {
     auto buttonPressed = [this]() {
-        const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>();
+        const auto* mousePressed = window->event->getIf<sf::Event::MouseButtonPressed>();
         if(mousePressed) {
             bool intersects = m_buttonRect.getGlobalBounds().contains(
             (sf::Vector2f)mousePressed->position);
@@ -67,7 +67,7 @@ void game::Button::update() {
     if(!m_clock.isRunning()) {
         // Button hover effect
         m_buttonRect.getGlobalBounds().contains(
-        (sf::Vector2f)sf::Mouse::getPosition(window)) ?
+        (sf::Vector2f)sf::Mouse::getPosition(*window)) ?
         m_buttonRect.setFillColor(s_hovered) :
         m_buttonRect.setFillColor(s_default);
     } else {

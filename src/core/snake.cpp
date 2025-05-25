@@ -1,16 +1,15 @@
 #include "snake.hpp"
-#include "apple.hpp"
-#include "engine.hpp"
 #include <cmath>
+#include <engine.hpp>
 
-game::Snake::Snake() : m_radius(gridSize.x / 2.f) {
+Snake::Snake() : m_radius(window->gridSize.x / 2.f) {
     m_clock.reset();
     m_bodyPart.setRadius(m_radius);
     m_bodyPart.setFillColor(sf::Color::Green); // Body
 
     for(int i = 0; i < m_initialSize; i++) {
-        float center = std::floor(numOfGrid / 2) * gridSize.x; // The same as gridSize.y
-        m_bodyPart.setPosition({ center, center + gridSize.x * i });
+        float center = std::floor(window->numOfGrid / 2) * window->gridSize.x; // The same as gridSize.y
+        m_bodyPart.setPosition({ center, center + window->gridSize.x * i });
         m_snake.push_back(m_bodyPart);
     }
 
@@ -18,53 +17,63 @@ game::Snake::Snake() : m_radius(gridSize.x / 2.f) {
     m_clock.start();
 }
 
-void game::Snake::draw() {
+void Snake::draw() {
     for(auto& circle : m_snake) {
-        window.draw(circle);
+        window->draw(circle);
     }
 }
 
 
-void game::Snake::move() {
+void Snake::move() {
     const uint currentTime = m_clock.getElapsedTime().asMilliseconds();
+
+    if(delay && currentTime <= delayVal)
+        return;
+    else
+        delay = false;
+
 
     if(currentTime >= (1000 / m_movesPerSecond)) {
         for(int i = m_snake.size() - 1; i >= 1; i--) {
             m_snake[i].setPosition(m_snake[i - 1].getPosition());
         }
 
-        m_snake[0].move({ gridSize.x * m_horizontalMove, gridSize.y * m_verticalMove });
+        m_snake[0].move({ window->gridSize.x * m_horizontalMove,
+        window->gridSize.y * m_verticalMove });
 
         m_clock.restart();
     }
 
-    sf::Vector2f headPosition = m_snake[0].getPosition();
-    sf::Vector2f windowSize = (sf::Vector2f)window.getSize();
+    auto headPosition = m_snake[0].getPosition();
+    auto windowSize = (sf::Vector2f)window->getSize();
 
     // Reset x position when going out of the right or left side of the window
-    if(headPosition.x < 0.f) {
-        m_snake[0].setPosition({ windowSize.x - gridSize.x, headPosition.y });
-    } else if(headPosition.x > (windowSize.x - gridSize.x)) {
+    if(headPosition.x <= -window->gridSize.x)
+        m_snake[0].setPosition({ windowSize.x - window->gridSize.x, headPosition.y });
+
+    if(headPosition.x >= (windowSize.x + window->gridSize.x))
         m_snake[0].setPosition({ 0.f, headPosition.y });
-    }
+
 
     // Reset x position when going out of the right or left side of the window
-    if(headPosition.y < 0.f) {
-        m_snake[0].setPosition({ headPosition.x, windowSize.y - gridSize.y });
-    } else if(headPosition.y > (windowSize.y - gridSize.y)) {
+    if(headPosition.y <= -window->gridSize.y)
+        m_snake[0].setPosition({ headPosition.x, windowSize.y - window->gridSize.y });
+
+    if(headPosition.y >= (windowSize.y + window->gridSize.y))
         m_snake[0].setPosition({ headPosition.x, 0.f });
-    }
+
 
     // Check Collision with Apple
-    if(m_snake[0].getGlobalBounds().contains(apple->getGlobalBounds().getCenter())) {
-        apple->update();
+    auto applePos = window->apple->getGlobalBounds().getCenter();
+    if(m_snake[0].getGlobalBounds().contains(applePos)) {
+        window->apple->update();
         m_bodyPart.setPosition(m_snake.back().getPosition());
         m_snake.push_back(m_bodyPart);
     }
 }
 
-void game::Snake::update() {
-    auto keyPressed = event->getIf<sf::Event::KeyPressed>();
+void Snake::update() {
+    auto keyPressed = window->event->getIf<sf::Event::KeyPressed>();
 
     if(!keyPressed) {
         return;
